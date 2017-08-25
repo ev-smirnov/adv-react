@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { reduxForm, Field } from 'redux-form'
 
-class SigninForm extends Component {
+class SignInForm extends Component {
   render() {
+    const { handleSubmit } = this.props;
     return (
       <div>
         <h2>Sign In</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <label>Email</label>
             <Field name="email" component="input" />
@@ -25,9 +25,9 @@ class SigninForm extends Component {
   }
 }
 
-SigninForm.propTypes = {};
-SigninForm.defaultProps = {};
+SignInForm.propTypes = {};
+SignInForm.defaultProps = {};
 
 export default reduxForm({
   form: 'auth'
-})(SigninForm);
+})(SignInForm);
