@@ -12,6 +12,7 @@ export const moduleName = 'auth'
 export const SIGN_UP_REQUEST = `${appName}/${moduleName}/SIGN_APP_REQUEST`
 export const SIGN_UP_SUCCESS = `${appName}/${moduleName}/SIGN_UP_SUCCESS`
 export const SIGN_UP_ERROR = `${appName}/${moduleName}/SIGN_UP_ERROR`
+export const SIGN_IN_SUCCESS = `${appName}/${moduleName}/SIGN_IN_SUCCESS`
 
 export default (state = new ReducerRecord(), action) => {
   const { type, payload, error } = action
@@ -20,7 +21,7 @@ export default (state = new ReducerRecord(), action) => {
     case SIGN_UP_REQUEST:
       return state.set('loading', true)
 
-    case SIGN_UP_SUCCESS:
+    case SIGN_IN_SUCCESS:
       return state
         .set('loading', false)
         .set('error', null)
@@ -54,3 +55,11 @@ export const signUp = (email, password) => {
 
   };
 };
+
+firebase.auth().onAuthStateChanged((user) => {
+  const store = require('../redux').default
+  store.dispatch({
+    type: SIGN_IN_SUCCESS,
+    payload: { user }
+  })
+})
