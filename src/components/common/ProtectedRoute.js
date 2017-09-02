@@ -22,5 +22,6 @@ ProtectedRoute.propTypes = {};
 ProtectedRoute.defaultProps = {};
 
 export default connect((state) => ({
-  authorized: !!state[moduleName].user
-}), null, null, { pure: false })(ProtectedRoute);
+  authorized: !!state[moduleName].user,
+  router: state.router,
+}))(ProtectedRoute);
