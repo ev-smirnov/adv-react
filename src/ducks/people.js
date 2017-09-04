@@ -1,8 +1,21 @@
-import { appName } from '../config';
 import { Record, List } from 'immutable';
+import { reset } from 'redux-form';
+import { appName } from '../config';
 import { put, call, takeEvery } from 'redux-saga/effects';
 import { generateId } from './utils';
 
+/**
+ * Constants
+ * */
+export const moduleName = 'people';
+const prefix = `${appName}/${moduleName}`;
+
+export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`;
+export const ADD_PERSON = `${prefix}/ADD_PERSON`;
+
+/**
+ * Reducer
+ * */
 const ReducerState = Record({
   entities: new List([]),
 });
@@ -13,11 +26,6 @@ const PersonRecord = Record({
   lastName: null,
   email: null,
 });
-
-export const moduleName = 'people';
-const prefix = `${appName}/${moduleName}`;
-export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`;
-export const ADD_PERSON = `${prefix}/ADD_PERSON`;
 
 export default (state = new ReducerState(), action) => {
   const { type, payload } = action;
@@ -31,32 +39,31 @@ export default (state = new ReducerState(), action) => {
   }
 };
 
+/**
+ * Selectors
+ * */
+
+/**
+ * Action Creators
+ * */
 export const addPerson = (person) => ({
   type: ADD_PERSON_REQUEST,
   payload: person
 });
 
+/**
+ * Sagas
+ * */
 export const addPersonSaga = function* (action) {
   const id = yield call(generateId);
   yield put({
     type: ADD_PERSON,
     payload: { ...action.payload, id }
-  })
-};
+  });
 
-/*
-export const addPerson = (person) => {
-  return (dispatch) => {
-    dispatch({
-      type: ADD_PERSON,
-      payload: {
-        person: { id: Date.now(), ...person }
-      }
-    })
-  };
+  yield put(reset('person'));
 };
-*/
 
 export const saga = function* () {
-  yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
-}
+  yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga);
+};
