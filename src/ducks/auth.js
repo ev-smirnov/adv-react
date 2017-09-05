@@ -7,53 +7,59 @@ import { appName } from '../config';
 /**
  * Constants
  * */
+
 export const moduleName = 'auth';
 const prefix = `${appName}/${moduleName}`;
 
 export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`;
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`;
+export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`;
 export const SIGN_IN_REQUEST = `${prefix}/SIGN_IN_REQUEST`;
 export const SIGN_IN_ERROR = `${prefix}/SIGN_IN_ERROR`;
 export const SIGN_IN_SUCCESS = `${prefix}/SIGN_IN_SUCCESS`;
 export const SIGN_OUT_REQUEST = `${prefix}/SIGN_OUT_REQUEST`;
 export const SIGN_OUT_SUCCESS = `${prefix}/SIGN_OUT_SUCCESS`;
 
+
 /**
  * Reducer
  * */
-const ReducerRecord = Record({
+
+export const ReducerRecord = Record({
   user: null,
   error: null,
   loading: false
 });
 
 export default (state = new ReducerRecord(), action) => {
-  const { type, payload, error } = action
+  const { type, payload, error } = action;
 
   switch (type) {
     case SIGN_UP_REQUEST:
     case SIGN_IN_REQUEST:
-      return state.set('loading', true)
+      return state.set('loading', true);
 
+    case SIGN_UP_SUCCESS:
     case SIGN_IN_SUCCESS:
       return state
         .set('loading', false)
         .set('error', null)
-        .set('user', payload.user)
+        .set('user', payload.user);
 
     case SIGN_UP_ERROR:
     case SIGN_IN_ERROR:
       return state
         .set('loading', false)
-        .set('error', error)
+        .set('error', error);
 
     case SIGN_OUT_SUCCESS:
-      return new ReducerRecord()
+      return new ReducerRecord();
 
     default:
       return state
   }
 }
+
 
 /**
  * Selectors
@@ -62,6 +68,7 @@ export default (state = new ReducerRecord(), action) => {
 /**
  * Action Creators
  * */
+
 export const signUp = (email, password) => ({
   type: SIGN_UP_REQUEST,
   payload: { email, password },
@@ -76,9 +83,11 @@ export const signOut = (email, password) => ({
   type: SIGN_OUT_REQUEST,
 });
 
+
 /**
  * Sagas
  * */
+
 export const signUpSaga = function* () {
   const auth = firebase.auth();
 
@@ -90,7 +99,7 @@ export const signUpSaga = function* () {
       const user = yield call([auth, auth.createUserWithEmailAndPassword], email, password);
 
       yield put({
-        type: SIGN_IN_SUCCESS,
+        type: SIGN_UP_SUCCESS,
         payload: { user },
       })
 
