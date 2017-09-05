@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { moduleName, fetchAll, eventListSelector } from '../../ducks/events';
 import Loader from '../common/Loader';
 
-class EventList extends Component {
+export class EventListTable extends Component {
   componentDidMount() {
     this.props.fetchAll();
   }
@@ -34,10 +34,10 @@ class EventList extends Component {
   }
 }
 
-EventList.propTypes = {};
-EventList.defaultProps = {};
+EventListTable.propTypes = {};
+EventListTable.defaultProps = {};
 
 export default connect(state => ({
   events: eventListSelector(state),
   loading: state[moduleName].loading,
-}), { fetchAll })(EventList);
+}), { fetchAll })(EventListTable);
