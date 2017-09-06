@@ -8,12 +8,20 @@ export class EventListTable extends Component {
     this.props.fetchAll();
   }
 
+  handleRowClick = (uid) => () => {
+    const { selectEvent } = this.props;
+    selectEvent && selectEvent(uid);
+  };
+
   getRows = () => (
     this.props.events.map(this.getRow)
   );
 
   getRow = (event) => (
-    <tr key={event.uid}>
+    <tr
+      key={event.uid}
+      onClick={this.handleRowClick(event.uid)}
+    >
       <td>{event.title}</td>
       <td>{event.where}</td>
       <td>{event.month}</td>
