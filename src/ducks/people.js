@@ -1,8 +1,9 @@
-import { Record, List } from 'immutable';
+import { Record, OrderedMap } from 'immutable';
 import { reset } from 'redux-form';
+import firebase from 'firebase';
 import { appName } from '../config';
 import { put, call, takeEvery } from 'redux-saga/effects';
-import { generateId } from './utils';
+import { fbDataToEntities } from './utils';
 
 /**
  * Constants
@@ -11,17 +12,18 @@ export const moduleName = 'people';
 const prefix = `${appName}/${moduleName}`;
 
 export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`;
-export const ADD_PERSON = `${prefix}/ADD_PERSON`;
+export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`;
+export const ADD_PERSON_ERROR = `${prefix}/ADD_PERSON_ERROR`;
 
 /**
  * Reducer
  * */
 const ReducerState = Record({
-  entities: new List([]),
+  entities: new OrderedMap([]),
 });
 
 const PersonRecord = Record({
-  id: null,
+  uid: null,
   firstName: null,
   lastName: null,
   email: null,
@@ -31,8 +33,9 @@ export default (state = new ReducerState(), action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case ADD_PERSON:
-      return state.update('entities', entities => entities.push(new PersonRecord(payload)));
+    case ADD_PERSON_SUCCESS:
+      return state
+        .mergeIn(['entities'], fbDataToEntities(payload, PersonRecord))
 
     default:
       return state
@@ -54,14 +57,24 @@ export const addPerson = (person) => ({
 /**
  * Sagas
  * */
-export const addPersonSaga = function* (action) {
-  const id = yield call(generateId);
-  yield put({
-    type: ADD_PERSON,
-    payload: { ...action.payload, id }
-  });
+export const addPersonSaga = function* ({ payload }) {
+  const ref = firebase.database().ref('people');
 
-  yield put(reset('person'));
+  try {
+    const data = yield call([ref, ref.push], payload);
+
+    yield put({
+      type: ADD_PERSON_SUCCESS,
+      payload: {[data.key]: payload}
+    });
+
+    yield put(reset('person'));
+  } catch (error) {
+    yield put({
+      type: ADD_PERSON_ERROR,
+      error,
+    });
+  }
 };
 
 export const saga = function* () {
