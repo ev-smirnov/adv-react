@@ -1,5 +1,5 @@
 import React from 'react';
-import PersonList from './PersonList';
+import PersonTable from './PersonTable';
 import renderer from 'react-test-renderer';
 import { testPeople } from '../../mocks/people';
 
@@ -8,6 +8,6 @@ jest.mock('react-dom', () => ({
 }));
 
 it('should renders correctly', () => {
-  const tree = renderer.create(<PersonList people={testPeople} />);
+  const tree = renderer.create(<PersonTable people={testPeople} />);
   expect(tree).toMatchSnapshot();
 });

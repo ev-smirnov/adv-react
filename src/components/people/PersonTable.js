@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Column } from 'react-virtualized';
 import Loader from '../common/Loader';
 
-class PersonList extends Component {
+class PersonTable extends Component {
   componentDidMount() {
     this.props.fetchAll && this.props.fetchAll();
   }
@@ -46,7 +46,7 @@ class PersonList extends Component {
   }
 }
 
-PersonList.propTypes = {};
-PersonList.defaultProps = {};
+PersonTable.propTypes = {};
+PersonTable.defaultProps = {};
 
-export default PersonList;
+export default PersonTable;

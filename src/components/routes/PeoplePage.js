@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { personListSelector, loadingSelector, addPerson, fetchAll } from '../../ducks/people';
 import NewPersonForm from '../people/NewPersonForm';
-import PersonList from '../people/PersonList';
+import PersonTable from '../people/PersonTable';
 
 class PeoplePage extends Component {
 
@@ -15,7 +15,7 @@ class PeoplePage extends Component {
         <h2>Add new person</h2>
         <NewPersonForm onSubmit={addPerson} />
         <h2>Person List</h2>
-        <PersonList people={people} fetchAll={fetchAll} loading={peopleLoading} />
+        <PersonTable people={people} fetchAll={fetchAll} loading={peopleLoading} />
       </div>
     );
   }
