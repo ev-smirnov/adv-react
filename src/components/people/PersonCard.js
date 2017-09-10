@@ -24,7 +24,14 @@ const spec = {
     return {
       uid: props.person.uid,
     }
-  }
+  },
+  endDrag(props, monitor) {
+    const personUid = props.person.uid;
+    const dropResult = monitor.getDropResult();
+    const eventUid = dropResult && dropResult.uid;
+
+    console.log('--- endDrag', personUid, eventUid);
+  },
 };
 
 const collect = (connect, monitor) => ({

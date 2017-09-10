@@ -2,7 +2,7 @@ import { Record, OrderedMap } from 'immutable';
 import { reset } from 'redux-form';
 import firebase from 'firebase';
 import { createSelector } from 'reselect';
-import { put, call, takeEvery, all } from 'redux-saga/effects';
+import { put, call, takeEvery, all, select } from 'redux-saga/effects';
 import { appName } from '../config';
 import { fbDataToEntities } from './utils';
 
@@ -18,6 +18,9 @@ export const ADD_PERSON_ERROR = `${prefix}/ADD_PERSON_ERROR`;
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`;
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`;
 export const FETCH_ALL_ERROR = `${prefix}/FETCH_ALL_ERROR`;
+export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`;
+export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`;
+export const ADD_EVENT_ERROR = `${prefix}/ADD_EVENT_ERROR`;
 
 /**
  * Reducer
@@ -33,6 +36,7 @@ const PersonRecord = Record({
   firstName: null,
   lastName: null,
   email: null,
+  events: [],
 });
 
 export default (state = new ReducerState(), action) => {
@@ -52,6 +56,10 @@ export default (state = new ReducerState(), action) => {
         .set('loading', false)
         .set('loaded', true)
         .set('entities', fbDataToEntities(payload, PersonRecord));
+
+    case ADD_EVENT_SUCCESS:
+      return state
+        .setIn(['entities', payload.personUid, 'events'], payload.events);
 
     default:
       return state
@@ -78,6 +86,11 @@ export const addPerson = (person) => ({
 
 export const fetchAll = () => ({
   type: FETCH_ALL_REQUEST,
+});
+
+export const addEventToPerson = (eventUid, personUid) => ({
+  type: ADD_EVENT_REQUEST,
+  payload: { eventUid, personUid }
 });
 
 /**
@@ -121,9 +134,37 @@ export const fetchAllSaga = function* () {
   }
 };
 
+export const addEventToPersonSaga = function* (action) {
+  const { eventUid, personUid } = action.payload;
+
+  const state = yield select(stateSelector);
+  const events = state.getIn(['entities', personUid, 'events']).concat(eventUid);
+
+  const eventsRef = firebase.database().ref(`people/${personUid}/events`);
+
+  try {
+    yield call([eventsRef, eventsRef.set], events);
+
+    yield put({
+      type: ADD_EVENT_SUCCESS,
+      payload: {
+        personUid,
+        events
+      },
+    });
+  } catch (error) {
+    yield put({
+      type: ADD_EVENT_ERROR,
+      error,
+    });
+  }
+
+};
+
 export const saga = function* () {
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+    takeEvery(ADD_EVENT_REQUEST, addEventToPersonSaga),
   ])
 };
