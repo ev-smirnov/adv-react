@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addPerson } from '../../ducks/people';
+import { personListSelector, loadingSelector, addPerson, fetchAll } from '../../ducks/people';
 import NewPersonForm from '../people/NewPersonForm';
+import PersonList from '../people/PersonList';
 
 class PeoplePage extends Component {
 
   render() {
+    const { people, peopleLoading, addPerson, fetchAll } = this.props;
+
     return (
       <div>
         <h1>People Page</h1>
-        <NewPersonForm onSubmit={this.props.addPerson} />
+        <h2>Add new person</h2>
+        <NewPersonForm onSubmit={addPerson} />
+        <h2>Person List</h2>
+        <PersonList people={people} fetchAll={fetchAll} loading={peopleLoading} />
       </div>
     );
   }
@@ -18,4 +24,7 @@ class PeoplePage extends Component {
 PeoplePage.propTypes = {};
 PeoplePage.defaultProps = {};
 
-export default connect(null, { addPerson })(PeoplePage);
+export default connect(state => ({
+  people: personListSelector(state),
+  peopleLoading: loadingSelector(state),
+}), { addPerson, fetchAll })(PeoplePage);
