@@ -1,26 +1,26 @@
-import { addPersonSaga, ADD_PERSON_REQUEST, ADD_PERSON } from './people';
+import { addPersonSaga, ADD_PERSON_REQUEST, ADD_PERSON_SUCCESS } from './people';
 import { call, put } from 'redux-saga/effects';
-import { generateId } from './utils';
+import firebase from 'firebase';
+import fixtureFactory from 'fixture-factory';
+import { personDataModel, personUidDataModel } from '../mocks/people';
 
 
 it('should dispatch person with id', () => {
-  const person = {
-    firstName: 'first',
-    lastName: 'last',
-    email: 'email@email.com',
-  };
+  const person = fixtureFactory.generateOne(personDataModel);
 
   const saga = addPersonSaga({
     type: ADD_PERSON_REQUEST,
     payload: person,
   });
 
-  expect(saga.next().value).toEqual(call(generateId));
+  const ref = firebase.database().ref('people');
 
-  const id = generateId();
+  expect(saga.next().value).toEqual(call([ref, ref.push], person));
 
-  expect(saga.next(id).value).toEqual(put({
-    type: ADD_PERSON,
-    payload: { ...person, id },
+  const data = { key: fixtureFactory.generateOne(personUidDataModel) };
+
+  expect(saga.next(data).value).toEqual(put({
+    type: ADD_PERSON_SUCCESS,
+    payload: { [data.key]: person },
   }));
 });

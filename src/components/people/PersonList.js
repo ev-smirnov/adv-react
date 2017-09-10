@@ -4,7 +4,7 @@ import Loader from '../common/Loader';
 
 class PersonList extends Component {
   componentDidMount() {
-    this.props.fetchAll();
+    this.props.fetchAll && this.props.fetchAll();
   }
 
   rowGetter = ({ index }) => this.props.people[index];
@@ -24,6 +24,7 @@ class PersonList extends Component {
         headerHeight={50}
         width={600}
         height={300}
+        rowClassName="test--people-list__row"
       >
         <Column
           label="First Name"

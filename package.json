@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "enzyme": "^2.9.1",
+    "fixture-factory": "^1.5.1",
     "react-test-renderer": "^15.6.1"
   }
 }
